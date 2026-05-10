@@ -679,11 +679,13 @@ body{
 <script>
 // ══════════════ DATA ══════════════
 const DAYS = [
-  { n:1, date:"5/23 (六)", title:"抵達名古屋", color:"#4a90d9", emoji:"🛬",
+  { n:1, date:"5/23 (六)", title:"台南出發 → 抵達名古屋", color:"#4a90d9", emoji:"🚄",
     wx:{city:"名古屋",lat:35.18,lon:136.90,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=230000"},
-    transport:"✈️ 17:55 中部國際機場入境 → 名鐵ミュースカイ（28分，¥1,430）→ 名古屋駅 → 步行4分到飯店",
+    transport:"🚄 09:13 台南高鐵站出發（車次618）→ 10:36 桃園高鐵站 → 桃園機場 → ✈️ 17:55 中部國際機場入境 → 名鐵ミュースカイ（28分，¥1,430）→ 名古屋駅",
     stops:[
-      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"入境後搭名鐵",emoji:"🛬"},
+      {name:"台南高鐵站",addr:"台南市歸仁區高鐵路1號",lat:22.9476,lng:120.2887,mapcode:"",tel:"02-4066-3000",note:"🚄 車次618　09:13 出發",emoji:"🚄"},
+      {name:"桃園高鐵站",addr:"桃園市中壢區高鐵北路一段6號",lat:24.9776,lng:121.2278,mapcode:"",tel:"02-4066-3000",note:"🚄 車次618　10:36 抵達 → 轉乘機場",emoji:"🏁"},
+      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"✈️ 17:55 入境 → 搭名鐵",emoji:"🛬"},
       {name:"ヴィアイン名古屋駅前椿町",addr:"愛知県名古屋市中村区椿町14-23",lat:35.1723,lng:136.8815,mapcode:"",tel:"052-433-7700",note:"今晚住宿",emoji:"🏨"},
     ]},
   { n:2, date:"5/24 (日)", title:"名古屋 → 飛驒高山", color:"#27ae60", emoji:"🚗",
@@ -737,11 +739,13 @@ const DAYS = [
       {name:"日産レンタカー名古屋新幹線駅前店",addr:"愛知県名古屋市中村区太閤4-1-16",lat:35.1722,lng:136.8830,mapcode:"",tel:"052-451-2300",note:"⚠️ 16:00前還車",emoji:"🚗"},
       {name:"東横INN 中部国際空港 2",addr:"愛知県常滑市りんくう町2-7-1",lat:34.8727,lng:136.8066,mapcode:"",tel:"0569-35-1045",note:"今晚住宿",emoji:"🏨"},
     ]},
-  { n:8, date:"5/30 (六)", title:"返回台北", color:"#e74c3c", emoji:"✈️",
+  { n:8, date:"5/30 (六)", title:"返回台北 → 回台南", color:"#e74c3c", emoji:"✈️",
     wx:{city:"名古屋",lat:35.18,lon:136.90,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=230000"},
-    transport:"✈️ 由飯店步行至中部國際機場航廈 → 10:40 起飛返回台北",
+    transport:"✈️ 由飯店步行至中部國際機場航廈 → 10:40 起飛返台 → 🚄 15:10 桃園高鐵站出發（車次651）→ 16:32 台南高鐵站",
     stops:[
-      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"10:40起飛 提前2小時到",emoji:"✈️"},
+      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"✈️ 10:40起飛　提前2小時到",emoji:"✈️"},
+      {name:"桃園高鐵站",addr:"桃園市中壢區高鐵北路一段6號",lat:24.9776,lng:121.2278,mapcode:"",tel:"02-4066-3000",note:"🚄 車次651　15:10 出發",emoji:"🚄"},
+      {name:"台南高鐵站",addr:"台南市歸仁區高鐵路1號",lat:22.9476,lng:120.2887,mapcode:"",tel:"02-4066-3000",note:"🚄 車次651　16:32 抵達　旅程結束 🎉",emoji:"🏠"},
     ]},
 ];
 
