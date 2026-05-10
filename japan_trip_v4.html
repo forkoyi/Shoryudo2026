@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🗾 北陸旅遊 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Nunito:wght@700;800;900&display=swap');
+:root{
+  --bg:#f7f3ee;
+  --surface:#ffffff;
+  --surface2:#fdf6ee;
+  --border:#e8ddd0;
+  --border2:#f0e6d8;
+  --accent:#f27c35;
+  --accent2:#e8445a;
+  --accent3:#3aadcf;
+  --accent4:#4cb87a;
+  --text:#2d2318;
+  --text2:#7a6555;
+  --text3:#b8a898;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);color:var(--text);
+  max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;height:100%;
+}
+
+/* ── App Header (hidden on itinerary tab, hero takes over) ── */
+.app-header{
+  background:linear-gradient(135deg,#ff8c42,#f05a78);
+  padding:14px 16px 12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 12px rgba(240,90,120,.25);
+}
+.app-title{font-family:'Nunito',sans-serif;font-size:19px;font-weight:900;color:#fff;}
+.app-sub{font-size:10px;color:rgba(255,255,255,.8);margin-top:1px;}
+.app-badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);
+  color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+/* ── Pages ── */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;display:none;}
+.page.active{display:block;}
+#page-itinerary{display:none;flex-direction:column;overflow:hidden;}
+#page-itinerary.active{display:flex;}
+
+/* ── Bottom Nav ── */
+.tab-nav{
+  display:flex;background:#fff;
+  border-top:1.5px solid var(--border2);flex-shrink:0;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+  box-shadow:0 -3px 14px rgba(0,0,0,.07);
+}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:4px 4px;cursor:pointer;border:none;background:none;
+  color:var(--text3);font-size:10px;font-family:'Noto Sans TC',sans-serif;
+  transition:all .2s;
+}
+.tab-btn .ico{font-size:21px;transition:transform .2s;}
+.tab-btn.active{color:var(--accent);}
+.tab-btn.active .ico{transform:scale(1.15);}
+
+/* ════════════════════════════════
+   PAGE 1: 行程
+   ════════════════════════════════ */
+
+/* Hero Banner */
+.it-hero{
+  flex-shrink:0;
+  background:linear-gradient(155deg,#ff7043 0%,#f5453d 35%,#e91e8c 100%);
+  padding:20px 18px 0;position:relative;overflow:hidden;
+}
+.it-hero::before{
+  content:'✈️';font-size:120px;opacity:.08;
+  position:absolute;right:-16px;top:-10px;
+  pointer-events:none;line-height:1;
+}
+.it-hero-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.it-hero-left{}
+.it-hero-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.12em;
+  color:rgba(255,255,255,.7);text-transform:uppercase;margin-bottom:6px;
+}
+.it-hero-title{
+  font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;
+  color:#fff;line-height:1.1;text-shadow:0 2px 10px rgba(0,0,0,.15);
+  transition:opacity .2s;
+}
+.it-hero-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:5px;font-weight:500;}
+
+/* Weather pill top-right */
+.it-wx-pill{
+  background:rgba(255,255,255,.18);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.3);border-radius:18px;
+  padding:12px 14px;text-align:center;min-width:72px;flex-shrink:0;
+  cursor:pointer;transition:background .15s;
+}
+.it-wx-pill:hover{background:rgba(255,255,255,.25);}
+.it-wx-icon{font-size:26px;line-height:1;}
+.it-wx-temp{
+  font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;
+  color:#fff;line-height:1;margin-top:3px;
+}
+.it-wx-city{font-size:9px;color:rgba(255,255,255,.7);margin-top:2px;}
+.it-wx-loading{font-size:10px;color:rgba(255,255,255,.6);padding:8px 0;}
+
+/* Day selector strip */
+.it-day-strip{
+  display:flex;gap:8px;overflow-x:auto;
+  padding:0 18px 18px;
+  scrollbar-width:none;
+}
+.it-day-strip::-webkit-scrollbar{display:none;}
+.it-day-pill{
+  flex-shrink:0;cursor:pointer;
+  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);
+  border:1.5px solid rgba(255,255,255,.22);border-radius:14px;
+  padding:9px 14px;text-align:center;min-width:58px;
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+.it-day-pill.active{
+  background:#fff;border-color:#fff;
+  box-shadow:0 5px 18px rgba(0,0,0,.18);
+  transform:translateY(-3px);
+}
+.it-day-pill .dp-label{font-size:9px;color:rgba(255,255,255,.65);font-weight:700;letter-spacing:.06em;}
+.it-day-pill.active .dp-label{color:var(--accent);}
+.it-day-pill .dp-num{
+  font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;
+  color:#fff;line-height:1;
+}
+.it-day-pill.active .dp-num{color:var(--accent);}
+.it-day-pill .dp-date{font-size:8.5px;color:rgba(255,255,255,.6);margin-top:1px;}
+.it-day-pill.active .dp-date{color:var(--text2);}
+
+/* Day content scroll area */
+.it-body{
+  flex:1;overflow-y:auto;background:var(--bg);
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Day content panel */
+.it-panel{padding:0 0 32px;}
+
+/* Day subheader inside scroll area */
+.it-day-subhead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px 10px;
+}
+.it-day-subhead-left{display:flex;align-items:center;gap:10px;}
+.it-day-color-bar{width:5px;height:44px;border-radius:3px;flex-shrink:0;}
+.it-day-name{
+  font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;
+  color:var(--text);line-height:1.15;
+}
+.it-day-datestr{font-size:11px;color:var(--text2);margin-top:1px;}
+
+/* Inline weather compact (right side of subhead) */
+.it-wx-inline{
+  background:linear-gradient(135deg,#e0f5ff,#d0eef8);
+  border:1.5px solid #a8d8f0;border-radius:12px;
+  padding:8px 12px;display:flex;align-items:center;gap:6px;
+  cursor:pointer;text-decoration:none;flex-shrink:0;transition:all .15s;
+}
+.it-wx-inline:hover{background:linear-gradient(135deg,#cceeff,#bce4f4);}
+.it-wx-inline .wxi-icon{font-size:18px;}
+.it-wx-inline .wxi-temp{
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:#1a6090;
+}
+.it-wx-inline .wxi-desc{font-size:9px;color:#4a8db0;margin-top:1px;}
+
+/* Transport */
+.it-transport{
+  margin:0 16px 12px;
+  background:linear-gradient(135deg,#fffaf2,#fff4e4);
+  border:1.5px solid #ffd9a8;border-radius:14px;
+  padding:11px 14px;font-size:12.5px;color:#7a4a10;line-height:1.7;
+}
+
+/* Section label */
+.it-sec{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--text3);padding:12px 18px 8px;
+  display:flex;align-items:center;gap:8px;
+}
+.it-sec::after{content:'';flex:1;height:1.5px;background:var(--border2);border-radius:1px;}
+
+/* Stop cards — timeline */
+.it-stops{padding:0 16px;position:relative;}
+.it-stops::before{
+  content:'';position:absolute;
+  left:32px;top:14px;bottom:14px;
+  width:2px;background:linear-gradient(180deg,var(--border2) 0%,transparent 100%);
+}
+.it-stop{
+  display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;
+}
+.it-stop-dot{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.13);
+  position:relative;z-index:1;margin-top:2px;
+}
+.it-stop-card{
+  flex:1;background:#fff;border:1.5px solid var(--border2);border-radius:14px;
+  padding:12px 13px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  transition:transform .15s,box-shadow .15s;
+}
+.it-stop-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.1);}
+.it-stop-name{font-size:13.5px;font-weight:700;color:var(--text);line-height:1.25;}
+.it-stop-addr{font-size:10.5px;color:var(--text3);margin-top:3px;line-height:1.4;}
+.it-stop-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;align-items:center;}
+.chip{font-size:10px;padding:3px 8px;border-radius:6px;font-family:'Courier New',monospace;font-weight:600;}
+.chip-map{background:#dbeeff;color:#1a5ca0;}
+.chip-tel{background:#d5f5e2;color:#176a3a;}
+.chip-note{background:#fff3d0;color:#8a4e00;}
+.map-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;
+  border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;
+  text-decoration:none;box-shadow:0 2px 8px rgba(39,174,96,.28);transition:all .15s;
+}
+.map-btn:active{transform:scale(.97);}
+
+/* Page fade animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════════════════════════════
+   PAGE 2: 行前確認
+   ════════════════════════════════ */
+.cl-wrap{padding:14px 16px 24px;}
+.cl-progress{
+  background:linear-gradient(135deg,#fff8ee,#ffeedd);
+  border:1.5px solid #ffd09a;border-radius:var(--r);
+  padding:14px;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(242,124,53,.1);
+}
+.cl-prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.cl-prog-label{font-size:12px;font-weight:700;color:var(--accent);}
+.cl-prog-txt{font-size:12px;color:var(--text2);}
+.cl-prog-track{height:8px;background:#ffe0b8;border-radius:4px;}
+.cl-prog-fill{height:100%;background:linear-gradient(90deg,#f27c35,#f5a623);border-radius:4px;transition:width .4s;}
+
+.cl-add-trigger{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:#fff;border:2px dashed var(--border);border-radius:var(--r);
+  padding:13px;color:var(--text2);font-size:13px;cursor:pointer;
+  transition:all .2s;margin-bottom:14px;font-weight:500;
+}
+.cl-add-trigger:hover{border-color:var(--accent);color:var(--accent);background:#fff9f4;}
+
+.cl-add-form{
+  background:linear-gradient(135deg,#fff8ee,#fff0f5);
+  border:2px solid var(--accent);border-radius:var(--r);
+  padding:14px;margin-bottom:14px;display:none;
+  box-shadow:0 4px 16px rgba(242,124,53,.15);
+  animation:fadeUp .2s ease;
+}
+.cl-add-form.open{display:block;}
+.cl-form-row{display:flex;gap:8px;margin-bottom:8px;}
+.cl-form-input{
+  flex:1;background:#fff;border:1.5px solid var(--border2);border-radius:9px;
+  padding:10px 12px;color:var(--text);font-size:13px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;
+}
+.cl-form-input:focus{border-color:var(--accent);}
+.cl-form-input::placeholder{color:var(--text3);}
+.cl-form-select{
+  background:#fff;border:1.5px solid var(--border2);border-radius:9px;
+  padding:10px 10px;color:var(--text);font-size:12px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;cursor:pointer;
+}
+.cl-form-btns{display:flex;justify-content:flex-end;gap:8px;}
+.cl-btn{
+  padding:9px 16px;border:none;border-radius:9px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;
+}
+.cl-btn-ok{background:linear-gradient(135deg,#f27c35,#f5a623);color:#fff;box-shadow:0 2px 8px rgba(242,124,53,.3);}
+.cl-btn-ok:hover{transform:scale(1.03);}
+.cl-btn-cancel{background:#fff;border:1.5px solid var(--border2);color:var(--text2);}
+.cl-btn-cancel:hover{background:#f8f0e8;}
+
+.cl-group{margin-bottom:14px;}
+.cl-group-title{
+  font-size:12px;font-weight:800;color:var(--accent);
+  font-family:'Nunito',sans-serif;margin-bottom:8px;letter-spacing:.02em;
+}
+.cl-item{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:#fff;border:1.5px solid var(--border2);border-radius:10px;
+  margin-bottom:5px;cursor:pointer;transition:all .15s;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.cl-item:hover{background:#fffaf3;border-color:#ffc870;transform:translateX(2px);}
+.cl-item.done{opacity:.45;}
+.cl-checkbox{
+  width:20px;height:20px;border-radius:6px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:12px;transition:all .18s;
+}
+.cl-item.done .cl-checkbox{background:var(--accent4);border-color:var(--accent4);color:#fff;}
+.cl-text{flex:1;}
+.cl-main{font-size:13px;color:var(--text);}
+.cl-sub{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4;}
+.cl-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 2px;transition:color .15s;flex-shrink:0;}
+.cl-del:hover{color:var(--accent2);}
+
+/* ════════════════════════════════
+   PAGE 3: 待買清單
+   ════════════════════════════════ */
+.sh-wrap{padding:14px 16px 24px;}
+.sh-add-row{display:flex;gap:8px;margin-bottom:8px;}
+.sh-input{
+  flex:1;background:#fff;border:1.5px solid var(--border2);border-radius:10px;
+  padding:10px 12px;color:var(--text);font-size:13px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;
+}
+.sh-input:focus{border-color:var(--accent);}
+.sh-input::placeholder{color:var(--text3);}
+.sh-cat-sel{
+  background:#fff;border:1.5px solid var(--border2);border-radius:10px;
+  padding:10px;color:var(--text);font-size:12px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;cursor:pointer;
+}
+.sh-add-btn{
+  background:linear-gradient(135deg,#f27c35,#f5a623);color:#fff;
+  border:none;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:900;
+  cursor:pointer;box-shadow:0 2px 8px rgba(242,124,53,.3);transition:all .15s;
+}
+.sh-add-btn:hover{transform:scale(1.06);}
+.sh-cat-section{margin-bottom:14px;}
+.sh-cat-label{
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+  margin-bottom:7px;padding-left:2px;font-family:'Nunito',sans-serif;
+}
+.sh-item{
+  background:#fff;border:1.5px solid var(--border2);border-radius:12px;
+  margin-bottom:8px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.sh-item-row{display:flex;align-items:center;gap:10px;padding:11px 13px;}
+.sh-check{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  flex-shrink:0;transition:all .15s;font-size:12px;
+}
+.sh-item.bought .sh-check{background:var(--accent3);border-color:var(--accent3);color:#fff;}
+.sh-item.bought .sh-name{opacity:.4;text-decoration:line-through;}
+.sh-name{font-size:13px;color:var(--text);flex:1;}
+.sh-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;padding:2px 4px;transition:color .15s;}
+.sh-del:hover{color:var(--accent2);}
+.sh-photos{display:flex;flex-wrap:wrap;gap:6px;padding:0 13px 11px;}
+.sh-photo{
+  width:70px;height:70px;border-radius:10px;object-fit:cover;cursor:pointer;
+  border:1.5px solid var(--border2);transition:transform .15s;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.sh-photo:hover{transform:scale(1.08);}
+.sh-photo-add{
+  width:70px;height:70px;border-radius:10px;border:2px dashed var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text3);font-size:10px;gap:3px;
+  background:var(--surface2);transition:all .15s;
+}
+.sh-photo-add:hover{border-color:var(--accent);color:var(--accent);}
+.sh-photo-add .ph-plus{font-size:22px;}
+.ph-input{display:none;}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;inset:0;background:rgba(30,20,10,.9);
+  display:none;align-items:center;justify-content:center;z-index:999;padding:20px;
+}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:100%;max-height:100%;border-radius:14px;object-fit:contain;box-shadow:0 10px 40px rgba(0,0,0,.4);}
+.lb-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.3);border-radius:50%;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;font-size:20px;
+}
+
+/* ════════════════════════════════
+   PAGE 4: 工具
+   ════════════════════════════════ */
+.tl-wrap{padding:14px 16px 24px;}
+.tl-card{
+  background:#fff;border:1.5px solid var(--border2);border-radius:var(--r);
+  padding:18px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
+}
+.tl-title{
+  font-size:14px;font-weight:900;color:var(--accent);margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;
+}
+
+/* Exchange */
+.ex-tabs{display:flex;gap:7px;margin-bottom:12px;}
+.ex-tab{
+  flex:1;padding:8px;text-align:center;
+  background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;
+  font-size:11px;cursor:pointer;font-weight:700;color:var(--text2);transition:all .15s;
+}
+.ex-tab.active{background:linear-gradient(135deg,#f27c35,#f5a623);color:#fff;border-color:#f27c35;box-shadow:0 2px 8px rgba(242,124,53,.3);}
+.ex-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.ex-inp{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-size:20px;font-weight:800;
+  font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;margin-bottom:10px;
+}
+.ex-inp:focus{border-color:var(--accent);}
+.ex-result{
+  background:linear-gradient(135deg,#fff5e6,#ffeedd);border:1.5px solid #ffd0a0;
+  border-radius:12px;padding:16px;text-align:center;margin-bottom:10px;
+}
+.ex-result-num{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900;color:var(--accent);}
+.ex-result-sub{font-size:11px;color:var(--text2);margin-top:4px;}
+.ex-rate-badge{
+  background:#e4f4fc;border:1.5px solid #a8d8ee;border-radius:9px;
+  padding:8px 12px;font-size:11px;color:#1a7aaa;text-align:center;
+}
+.ex-rate-live{color:var(--accent3);font-weight:700;}
+
+/* Ledger */
+.ld-add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ld-inp{
+  background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;
+  padding:9px 10px;color:var(--text);font-size:12px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;width:100%;
+}
+.ld-inp:focus{border-color:var(--accent3);}
+.ld-inp::placeholder{color:var(--text3);}
+.ld-inp-full{grid-column:span 2;}
+.ld-sel{
+  background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;
+  padding:9px 10px;color:var(--text);font-size:12px;
+  font-family:'Noto Sans TC',sans-serif;outline:none;cursor:pointer;width:100%;
+}
+.ld-add-btn{
+  grid-column:span 2;background:linear-gradient(135deg,#3aadcf,#22a0c5);
+  color:#fff;border:none;border-radius:9px;padding:11px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;
+  box-shadow:0 2px 8px rgba(58,173,207,.3);transition:all .15s;
+}
+.ld-add-btn:hover{transform:scale(1.02);}
+.ld-row{
+  display:flex;align-items:center;gap:8px;padding:9px 0;
+  border-bottom:1.5px solid var(--border2);
+}
+.ld-row:last-child{border-bottom:none;}
+.ld-avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;font-family:'Nunito',sans-serif;
+}
+.ld-yq{background:#dbeeff;color:#1a5ab0;}
+.ld-bf{background:#f5e0ff;color:#7820cc;}
+.ld-info{flex:1;}
+.ld-item-name{font-size:12.5px;color:var(--text);font-weight:500;}
+.ld-item-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.ld-amt{font-size:13px;font-weight:700;color:var(--text);}
+.ld-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;transition:color .15s;}
+.ld-del:hover{color:var(--accent2);}
+.ld-summary{
+  background:linear-gradient(135deg,#e6f8ff,#eefff6);
+  border:1.5px solid #b0e4f8;border-radius:12px;padding:14px;margin-top:12px;
+}
+.ld-sum-row{display:flex;justify-content:space-between;padding:5px 0;}
+.ld-sum-lbl{font-size:12px;color:var(--text2);}
+.ld-sum-val{font-size:13px;font-weight:700;color:var(--text);}
+.ld-settle{
+  margin-top:10px;padding-top:10px;border-top:1.5px solid #b0dff0;
+  font-size:12px;font-weight:700;color:#1a8aaa;text-align:center;
+}
+.empty{text-align:center;color:var(--text3);padding:20px;font-size:12px;}
+
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.loading{animation:pulse 1.5s infinite;color:var(--text3);font-size:12px;}
+</style>
+</head>
+<body>
+
+<!-- ══ App header (shows on non-itinerary tabs) ══ -->
+<div class="app-header" id="app-header">
+  <div>
+    <div class="app-title">🗾 北陸旅遊 2026</div>
+    <div class="app-sub">5/23–5/30 · 名古屋 · 高山 · 上高地 · 金澤</div>
+  </div>
+  <div class="app-badge">8天7夜</div>
+</div>
+
+<div class="pages">
+
+<!-- PAGE 1: 行程 -->
+<div class="page active" id="page-itinerary">
+
+  <!-- Hero Banner -->
+  <div class="it-hero">
+    <div class="it-hero-top">
+      <div class="it-hero-left">
+        <div class="it-hero-eyebrow">2026 TRIP · 北陸自駕</div>
+        <div class="it-hero-title" id="hero-title">抵達名古屋</div>
+        <div class="it-hero-sub" id="hero-sub">Day 1 · 5/23 (六)</div>
+      </div>
+      <div class="it-wx-pill" id="hero-wx" onclick="openWxLink()">
+        <div class="it-wx-loading loading">🌤</div>
+      </div>
+    </div>
+    <!-- Day Pills -->
+    <div class="it-day-strip" id="day-strip"></div>
+  </div>
+
+  <!-- Scrollable body -->
+  <div class="it-body" id="it-body">
+    <div class="it-panel" id="it-panel"></div>
+  </div>
+
+</div>
+
+<!-- PAGE 2: 行前確認 -->
+<div class="page" id="page-checklist">
+  <div class="cl-wrap">
+    <div class="cl-progress">
+      <div class="cl-prog-row">
+        <span class="cl-prog-label">行前準備進度</span>
+        <span class="cl-prog-txt" id="prog-txt">0 / 0</span>
+      </div>
+      <div class="cl-prog-track"><div class="cl-prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="cl-add-trigger" onclick="toggleAddForm()">＋ 新增自訂事項</div>
+    <div class="cl-add-form" id="cl-add-form">
+      <div class="cl-form-row">
+        <select class="cl-form-select" id="cl-form-group">
+          <option value="📋 證件類">📋 證件類</option>
+          <option value="🚗 租車相關">🚗 租車相關</option>
+          <option value="🏨 住宿確認">🏨 住宿確認</option>
+          <option value="🎟 預約事項">🎟 預約事項</option>
+          <option value="💊 行前準備">💊 行前準備</option>
+          <option value="🆕 自訂">🆕 自訂</option>
+        </select>
+      </div>
+      <div class="cl-form-row">
+        <input class="cl-form-input" id="cl-form-main" placeholder="事項名稱（必填）" maxlength="40">
+      </div>
+      <div class="cl-form-row">
+        <input class="cl-form-input" id="cl-form-sub" placeholder="備註說明（選填）" maxlength="80">
+      </div>
+      <div class="cl-form-btns">
+        <button class="cl-btn cl-btn-cancel" onclick="cancelAddForm()">取消</button>
+        <button class="cl-btn cl-btn-ok" onclick="confirmAdd()">新增</button>
+      </div>
+    </div>
+    <div id="cl-container"></div>
+  </div>
+</div>
+
+<!-- PAGE 3: 待買清單 -->
+<div class="page" id="page-shopping">
+  <div class="sh-wrap">
+    <div class="sh-add-row">
+      <select class="sh-cat-sel" id="sh-cat">
+        <option value="藥妝">💊 藥妝</option>
+        <option value="零食">🍡 零食</option>
+        <option value="伴手禮">🎁 伴手禮</option>
+        <option value="衣物">👗 衣物</option>
+        <option value="電子">📱 電子</option>
+        <option value="其他">📦 其他</option>
+      </select>
+      <input class="sh-input" id="sh-input" placeholder="新增商品名稱..." maxlength="40">
+      <button class="sh-add-btn" onclick="addShop()">＋</button>
+    </div>
+    <div id="sh-list"></div>
+  </div>
+</div>
+
+<!-- PAGE 4: 工具 -->
+<div class="page" id="page-tools">
+  <div class="tl-wrap">
+
+    <!-- 匯率 -->
+    <div class="tl-card">
+      <div class="tl-title">💱 即時匯率換算</div>
+      <div class="ex-tabs">
+        <div class="ex-tab active" onclick="setExDir('JPY','TWD',this)">¥ → NT$</div>
+        <div class="ex-tab" onclick="setExDir('TWD','JPY',this)">NT$ → ¥</div>
+      </div>
+      <div class="ex-lbl" id="ex-lbl">輸入日圓 (¥)</div>
+      <input class="ex-inp" id="ex-inp" type="number" value="1000" oninput="calcEx()">
+      <div class="ex-result">
+        <div class="ex-result-num" id="ex-num">—</div>
+        <div class="ex-result-sub" id="ex-sub"></div>
+      </div>
+      <div class="ex-rate-badge" id="ex-badge">正在取得即時匯率…</div>
+    </div>
+
+    <!-- 記帳本 -->
+    <div class="tl-card">
+      <div class="tl-title">📒 旅費記帳本</div>
+      <div class="ld-add">
+        <select class="ld-sel" id="ld-payer">
+          <option value="奕銓">👤 奕銓 付</option>
+          <option value="秉芬">👤 秉芬 付</option>
+        </select>
+        <select class="ld-sel" id="ld-date">
+          <option value="5/23">5/23 (六) Day1</option>
+          <option value="5/24">5/24 (日) Day2</option>
+          <option value="5/25">5/25 (一) Day3</option>
+          <option value="5/26">5/26 (二) Day4</option>
+          <option value="5/27">5/27 (三) Day5</option>
+          <option value="5/28">5/28 (四) Day6</option>
+          <option value="5/29">5/29 (五) Day7</option>
+          <option value="5/30">5/30 (六) Day8</option>
+        </select>
+        <input class="ld-inp ld-inp-full" id="ld-item" placeholder="項目（午餐、纜車票…）" maxlength="25">
+        <input class="ld-inp" id="ld-amount" type="number" placeholder="金額" min="0">
+        <select class="ld-sel" id="ld-currency">
+          <option value="JPY">日圓 ¥</option>
+          <option value="TWD">台幣 NT$</option>
+        </select>
+        <button class="ld-add-btn" onclick="addLedger()">新增記帳</button>
+      </div>
+      <div id="ld-list"></div>
+      <div id="ld-summary" style="display:none">
+        <div class="ld-summary">
+          <div class="ld-sum-row"><span class="ld-sum-lbl">👤 奕銓 總付</span><span class="ld-sum-val" id="sum-yq"></span></div>
+          <div class="ld-sum-row"><span class="ld-sum-lbl">👤 秉芬 總付</span><span class="ld-sum-val" id="sum-bf"></span></div>
+          <div class="ld-sum-row"><span class="ld-sum-lbl">🧾 總計</span><span class="ld-sum-val" id="sum-total"></span></div>
+          <div class="ld-settle" id="ld-settle"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLb()">
+  <div class="lb-close" onclick="closeLb()">✕</div>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<!-- Bottom Nav -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('itinerary',this)">
+    <span class="ico">🗺️</span><span>行程</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('checklist',this)">
+    <span class="ico">✅</span><span>行前</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('shopping',this)">
+    <span class="ico">🛍️</span><span>待買</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('tools',this)">
+    <span class="ico">🔧</span><span>工具</span>
+  </button>
+</nav>
+
+<script>
+// ══════════════ DATA ══════════════
+const DAYS = [
+  { n:1, date:"5/23 (六)", title:"抵達名古屋", color:"#4a90d9", emoji:"🛬",
+    wx:{city:"名古屋",lat:35.18,lon:136.90,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=230000"},
+    transport:"✈️ 17:55 中部國際機場入境 → 名鐵ミュースカイ（28分，¥1,430）→ 名古屋駅 → 步行4分到飯店",
+    stops:[
+      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"入境後搭名鐵",emoji:"🛬"},
+      {name:"ヴィアイン名古屋駅前椿町",addr:"愛知県名古屋市中村区椿町14-23",lat:35.1723,lng:136.8815,mapcode:"",tel:"052-433-7700",note:"今晚住宿",emoji:"🏨"},
+    ]},
+  { n:2, date:"5/24 (日)", title:"名古屋 → 飛驒高山", color:"#27ae60", emoji:"🚗",
+    wx:{city:"高山",lat:36.14,lon:137.25,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=210000"},
+    transport:"🚗 08:30 日産レンタカー取車 → 東海北陸道 → 高山（約2.5小時）",
+    stops:[
+      {name:"日産レンタカー名古屋新幹線駅前店",addr:"愛知県名古屋市中村区太閤4-1-16",lat:35.1722,lng:136.8830,mapcode:"",tel:"052-451-2300",note:"08:30取車",emoji:"🚗"},
+      {name:"高山陣屋",addr:"岐阜県高山市八軒町1-5",lat:36.1393,lng:137.2573,mapcode:"191 196 307*81",tel:"0577-32-0643",note:"08:45–17:00 ¥500",emoji:"🏛️"},
+      {name:"高山古い町並（三町）",addr:"岐阜県高山市上三之町",lat:36.1420,lng:137.2563,mapcode:"191 196 037*07",tel:"0577-32-3333",note:"散步免費",emoji:"🏘️"},
+      {name:"東急ステイ飛騨高山 結の湯",addr:"岐阜県高山市花岡町2-60",lat:36.1468,lng:137.2481,mapcode:"191 195 780*44",tel:"0577-70-5001",note:"今晚住宿",emoji:"🏨"},
+    ]},
+  { n:3, date:"5/25 (一)", title:"高山 → 上高地 → 奧飛驒", color:"#8e44ad", emoji:"🌿",
+    wx:{city:"上高地",lat:36.24,lon:137.66,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=200000"},
+    transport:"🚗 → あかんだな駐車場停車 → 接駁巴士（30分間隔，¥2,800往復）→ 上高地 → 草円",
+    stops:[
+      {name:"あかんだな駐車場",addr:"岐阜県高山市奥飛騨温泉郷平湯791-38",lat:36.2422,lng:137.5893,mapcode:"204 908 436*05",tel:"0578-89-2351",note:"¥600/日 始發8:30",emoji:"🅿️"},
+      {name:"上高地バスターミナル（河童橋）",addr:"長野県松本市安曇上高地",lat:36.2388,lng:137.6603,mapcode:"348 671 257*55",tel:"0263-95-2433",note:"新綠健行絕景",emoji:"🌿"},
+      {name:"山里のいおり 草円（Souene）",addr:"岐阜県高山市奥飛騨温泉郷福地1346",lat:36.2596,lng:137.5697,mapcode:"204 934 780*22",tel:"0578-89-2793",note:"⚠️ 入住15:00–17:00",emoji:"♨️"},
+    ]},
+  { n:4, date:"5/26 (二)", title:"奧飛驒 → 白川鄉 → 富山", color:"#e67e22", emoji:"🏔️",
+    wx:{city:"白川郷",lat:36.26,lon:136.91,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=210000"},
+    transport:"🚗 → 新穂高纜車（早上）→ 白川郷 → 五箇山 → 富山（全程約4小時）",
+    stops:[
+      {name:"新穂高ロープウェイ",addr:"岐阜県高山市奥飛騨温泉郷新穂高温泉",lat:36.2745,lng:137.5917,mapcode:"204 879 874*11",tel:"0578-89-2252",note:"始發8:30 ¥3,800往復",emoji:"🚡"},
+      {name:"白川郷 村営せせらぎ公園駐車場",addr:"岐阜県大野郡白川村荻町2697",lat:36.2563,lng:136.9059,mapcode:"229 254 862*77",tel:"05769-6-1311",note:"¥1,000/次",emoji:"🏘️"},
+      {name:"五箇山 相倉合掌造り集落",addr:"富山県南砺市相倉",lat:36.3773,lng:136.8898,mapcode:"321 553 343*44",tel:"0763-66-2123",note:"世界遺産 ¥500",emoji:"🌾"},
+      {name:"ダイワロイネットホテル富山駅前",addr:"富山県富山市牛島新町2-3",lat:36.7029,lng:137.2160,mapcode:"131 717 868*00",tel:"076-432-1311",note:"今晚住宿",emoji:"🏨"},
+    ]},
+  { n:5, date:"5/27 (三)", title:"富山 → 雨晴海岸 → 金澤", color:"#c0392b", emoji:"🌊",
+    wx:{city:"富山",lat:36.70,lon:137.21,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=160000"},
+    transport:"🚗 → 雨晴海岸（40–50分）→ 東茶屋街 → 金澤（1.5小時）",
+    stops:[
+      {name:"道の駅 雨晴（最佳攝影點）",addr:"富山県高岡市太田24-74",lat:36.7765,lng:136.9207,mapcode:"132 178 490*22",tel:"0766-53-5661",note:"⭐ 13:00後順光最美",emoji:"📸"},
+      {name:"東茶屋街（ひがし茶屋街）",addr:"石川県金沢市東山1丁目",lat:36.5727,lng:136.6693,mapcode:"53 236 720*11",tel:"076-232-5555",note:"店舖10:00–17:00",emoji:"🏮"},
+      {name:"SOKI KANAZAWA",addr:"石川県金沢市袋町2-1",lat:36.5649,lng:136.6559,mapcode:"53 204 518*44",tel:"076-210-0270",note:"今晚住宿",emoji:"🏨"},
+    ]},
+  { n:6, date:"5/28 (四)", title:"金澤全日深度遊", color:"#2980b9", emoji:"🏛️",
+    wx:{city:"金澤",lat:36.59,lon:136.63,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=170000"},
+    transport:"🚗 市內移動",
+    stops:[
+      {name:"兼六園",addr:"石川県金沢市兼六町1",lat:36.5615,lng:136.6619,mapcode:"53 235 668*77",tel:"076-234-3800",note:"7:00–18:00 ¥320",emoji:"🌸"},
+      {name:"金沢21世紀美術館",addr:"石川県金沢市広坂1-2-1",lat:36.5605,lng:136.6579,mapcode:"53 235 236*55",tel:"076-220-2800",note:"10:00–18:00 週一休",emoji:"🎨"},
+      {name:"MEGA唐吉訶德 LAPARK金沢店",addr:"石川県金沢市西泉4-11",lat:36.5586,lng:136.6115,mapcode:"53 111 418*33",tel:"0570-040-311",note:"08:00–24:00 免稅",emoji:"🛒"},
+      {name:"SOKI KANAZAWA",addr:"石川県金沢市袋町2-1",lat:36.5649,lng:136.6559,mapcode:"53 204 518*44",tel:"076-210-0270",note:"連泊",emoji:"🏨"},
+    ]},
+  { n:7, date:"5/29 (五)", title:"金澤 → 名古屋還車", color:"#7f8c8d", emoji:"🛣️",
+    wx:{city:"名古屋",lat:35.18,lon:136.90,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=230000"},
+    transport:"🚗 12:30出發 → 高速 → 名古屋（約3小時）→ ⚠️ 16:00前還車",
+    stops:[
+      {name:"近江町市場（最終採買）",addr:"石川県金沢市青草町88",lat:36.5679,lng:136.6554,mapcode:"53 204 518*22",tel:"076-231-1462",note:"9:00–17:00",emoji:"🐟"},
+      {name:"日産レンタカー名古屋新幹線駅前店",addr:"愛知県名古屋市中村区太閤4-1-16",lat:35.1722,lng:136.8830,mapcode:"",tel:"052-451-2300",note:"⚠️ 16:00前還車",emoji:"🚗"},
+      {name:"東横INN 中部国際空港 2",addr:"愛知県常滑市りんくう町2-7-1",lat:34.8727,lng:136.8066,mapcode:"",tel:"0569-35-1045",note:"今晚住宿",emoji:"🏨"},
+    ]},
+  { n:8, date:"5/30 (六)", title:"返回台北", color:"#e74c3c", emoji:"✈️",
+    wx:{city:"名古屋",lat:35.18,lon:136.90,url:"https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=230000"},
+    transport:"✈️ 由飯店步行至中部國際機場航廈 → 10:40 起飛返回台北",
+    stops:[
+      {name:"中部國際機場（Centrair）",addr:"愛知県常滑市セントレア1-1",lat:34.8583,lng:136.8054,mapcode:"",tel:"0569-38-1195",note:"10:40起飛 提前2小時到",emoji:"✈️"},
+    ]},
+];
+
+const CHECKLIST_DATA = [
+  {group:"📋 證件類",items:[
+    {main:"護照",sub:"確認有效期限至少6個月以上",done:false},
+    {main:"日本駕照譯本（JAF）",sub:"中華民國駕照日文譯本，JAF或監理所申辦",done:false},
+    {main:"中華民國駕照正本",sub:"需與譯本一起攜帶，缺一不可",done:false},
+    {main:"台灣健保卡",sub:"備用，部分日本醫療可能需要",done:false},
+    {main:"信用卡",sub:"Visa/Master各帶1張，確認已開通海外刷卡",done:false},
+  ]},
+  {group:"🚗 租車相關",items:[
+    {main:"確認租車預約",sub:"日産レンタカー名古屋新幹線駅前店，08:30取車",done:false},
+    {main:"ETC卡（於取車時租借）",sub:"高速公路必備",done:false},
+    {main:"下載離線地圖（Google Maps）",sub:"山區收訊不佳，出發前下載離線圖資",done:false},
+    {main:"確認還車時間",sub:"5/29 16:00前，名古屋新幹線駅前店",done:false},
+  ]},
+  {group:"🏨 住宿確認",items:[
+    {main:"Via Inn 名古屋（5/23）",sub:"確認Check-in時間及地址",done:false},
+    {main:"東急ステイ飛騨高山（5/24）",sub:"確認早餐及停車場",done:false},
+    {main:"草円 Souene（5/25）",sub:"⚠️ 入住時間 15:00–17:00 嚴格限定",done:false},
+    {main:"ダイワロイネット富山（5/26）",sub:"確認停車場",done:false},
+    {main:"SOKI KANAZAWA（5/27–5/28）",sub:"連住2晚，確認行李寄存",done:false},
+    {main:"東横INN 中部国際空港2（5/29）",sub:"確認步行至航廈距離",done:false},
+  ]},
+  {group:"🎟 預約事項",items:[
+    {main:"21世紀美術館・泳池預約",sub:"Swimming Pool需提前在官網預約，週一休",done:false},
+    {main:"新穂高ロープウェイ購票",sub:"可提前在官網買QR Code票省去排隊",done:false},
+  ]},
+  {group:"💊 行前準備",items:[
+    {main:"日本旅遊保險",sub:"確認涵蓋範圍及理賠金額",done:false},
+    {main:"備妥日幣現金",sub:"山區景點不接受刷卡，建議帶¥50,000以上",done:false},
+    {main:"日本SIM卡或WiFi分享器",sub:"確認套餐天數（5/23–5/30 共8天）",done:false},
+    {main:"備用藥品",sub:"頭痛藥、腸胃藥、防蚊液（5月山區有蚊蟲）",done:false},
+    {main:"奧飛驒備薄外套",sub:"上高地及奧飛驒5月底早晚較涼，約12–16°C",done:false},
+  ]},
+];
+
+const DEFAULT_SHOP = [
+  {name:"肌研極潤保濕化妝水",cat:"藥妝",bought:false,photos:[]},
+  {name:"龍角散糖果",cat:"零食",bought:false,photos:[]},
+  {name:"旅行藥（百保能、胃腸藥）",cat:"藥妝",bought:false,photos:[]},
+  {name:"飛驒地酒",cat:"伴手禮",bought:false,photos:[]},
+  {name:"さるぼぼ布偶",cat:"伴手禮",bought:false,photos:[]},
+  {name:"柴舟小出・柴舟餅乾",cat:"伴手禮",bought:false,photos:[]},
+  {name:"烏雞庵金箔蜂蜜蛋糕",cat:"伴手禮",bought:false,photos:[]},
+  {name:"白蝦紀行仙貝（富山）",cat:"零食",bought:false,photos:[]},
+  {name:"甘金丹（富山銘菓）",cat:"零食",bought:false,photos:[]},
+];
+
+// ══════════════ STATE ══════════════
+let currentDay = 0;
+let checklist  = CHECKLIST_DATA.map(g=>({...g,items:g.items.map(i=>({...i}))}));
+let shopItems  = DEFAULT_SHOP.map((i,n)=>({...i,photos:[],id:n}));
+let ledgerItems= [];
+let exDir      = {from:'JPY',to:'TWD'};
+let liveRate   = null;
+let wxCache    = {};
+let wxUrlCurrent = DAYS[0].wx.url;
+
+// ══════════════ ITINERARY ══════════════
+function buildDayStrip() {
+  document.getElementById('day-strip').innerHTML = DAYS.map((d,i)=>`
+    <div class="it-day-pill ${i===0?'active':''}" id="pill-${i}" onclick="gotoDay(${i})">
+      <div class="dp-label">Day</div>
+      <div class="dp-num">${d.n}</div>
+      <div class="dp-date">${d.date.split(' ')[0]}</div>
+    </div>`).join('');
+}
+
+function gotoDay(idx) {
+  if (idx < 0 || idx >= DAYS.length) return;
+  currentDay = idx;
+  const d = DAYS[idx];
+  wxUrlCurrent = d.wx.url;
+
+  // Update pills
+  document.querySelectorAll('.it-day-pill').forEach((el,i)=>el.classList.toggle('active',i===idx));
+  const pill = document.getElementById('pill-'+idx);
+  if (pill) pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+
+  // Update hero text
+  document.getElementById('hero-title').textContent = d.title;
+  document.getElementById('hero-sub').textContent = `Day ${d.n} · ${d.date}`;
+
+  // Animate content out → render → animate in
+  const panel = document.getElementById('it-panel');
+  panel.style.transition = 'opacity .15s ease, transform .15s ease';
+  panel.style.opacity = '0';
+  panel.style.transform = 'translateY(10px)';
+
+  setTimeout(()=>{
+    renderDayPanel(idx);
+    panel.style.transition = 'opacity .28s ease, transform .28s ease';
+    panel.style.opacity = '1';
+    panel.style.transform = 'translateY(0)';
+    document.getElementById('it-body').scrollTop = 0;
+    if (wxCache[idx]) applyWxInline(idx, wxCache[idx]);
+  }, 160);
+
+  fetchWx(idx);
+}
+
+function renderDayPanel(idx) {
+  const d = DAYS[idx];
+  const stopsHtml = d.stops.map(s=>{
+    const mc  = s.mapcode ? `<span class="chip chip-map">MAP ${s.mapcode}</span>` : '';
+    const tel = s.tel ? `<span class="chip chip-tel">☎ ${s.tel}</span>` : '';
+    const note= s.note ? `<span class="chip chip-note">${s.note}</span>` : '';
+    const nav = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`;
+    return `<div class="it-stop">
+      <div class="it-stop-dot" style="background:${d.color}">${s.emoji||'📍'}</div>
+      <div class="it-stop-card">
+        <div class="it-stop-name">${s.name}</div>
+        <div class="it-stop-addr">${s.addr}</div>
+        <div class="it-stop-chips">
+          <a class="map-btn" href="${nav}" target="_blank">📍 Google導航</a>
+          ${mc}${tel}${note}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('it-panel').innerHTML = `
+    <div class="it-day-subhead">
+      <div class="it-day-subhead-left">
+        <div class="it-day-color-bar" style="background:${d.color}"></div>
+        <div>
+          <div class="it-day-name">${d.emoji} ${d.title}</div>
+          <div class="it-day-datestr">${d.date}</div>
+        </div>
+      </div>
+      <a class="it-wx-inline" href="${d.wx.url}" target="_blank" id="wx-inline">
+        <span class="wxi-icon" id="wxi-icon">🌤</span>
+        <div>
+          <div class="wxi-temp" id="wxi-temp">—</div>
+          <div class="wxi-desc" id="wxi-desc">天氣預報</div>
+        </div>
+      </a>
+    </div>
+    <div class="it-sec">🚗 今日交通</div>
+    <div class="it-transport">${d.transport}</div>
+    <div class="it-sec">📍 今日地點</div>
+    <div class="it-stops">${stopsHtml}</div>
+    <div style="height:20px"></div>`;
+}
+
+// ══════════════ WEATHER ══════════════
+const WX = {
+  0:{i:'☀️',d:'晴天'},1:{i:'🌤️',d:'多雲時晴'},2:{i:'⛅',d:'多雲'},3:{i:'☁️',d:'陰天'},
+  45:{i:'🌫️',d:'霧'},48:{i:'🌫️',d:'霧'},51:{i:'🌦️',d:'毛毛雨'},53:{i:'🌧️',d:'小雨'},
+  55:{i:'🌧️',d:'中雨'},61:{i:'🌧️',d:'小雨'},63:{i:'🌧️',d:'中雨'},65:{i:'🌧️',d:'大雨'},
+  71:{i:'❄️',d:'小雪'},80:{i:'🌦️',d:'陣雨'},95:{i:'⛈️',d:'雷雨'},
+};
+function getWx(c){return WX[c]||WX[Math.floor(c/10)*10]||{i:'🌡️',d:'—'};}
+
+async function fetchWx(idx) {
+  if (wxCache[idx]) { applyWxBanner(wxCache[idx]); applyWxInline(idx,wxCache[idx]); return; }
+  const d = DAYS[idx];
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${d.wx.lat}&longitude=${d.wx.lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia%2FTokyo&forecast_days=16`;
+    const r = await fetch(url);
+    const data = await r.json();
+    const target = new Date(2026,4,23+idx).toISOString().split('T')[0];
+    const di = data.daily.time.indexOf(target);
+    if (di===-1) throw 0;
+    const info = {max:Math.round(data.daily.temperature_2m_max[di]),min:Math.round(data.daily.temperature_2m_min[di]),code:data.daily.weathercode[di],city:d.wx.city};
+    wxCache[idx] = info;
+    applyWxBanner(info);
+    applyWxInline(idx, info);
+  } catch(e) {
+    document.getElementById('hero-wx').innerHTML = `<div style="font-size:9px;color:rgba(255,255,255,.6);padding:6px 0;">無法取得<br>天氣</div>`;
+  }
+}
+
+function applyWxBanner(info) {
+  const w = getWx(info.code);
+  document.getElementById('hero-wx').innerHTML = `
+    <div class="it-wx-icon">${w.i}</div>
+    <div class="it-wx-temp">${info.max}°</div>
+    <div class="it-wx-city">${info.city}</div>`;
+}
+function applyWxInline(idx, info) {
+  const w = getWx(info.code);
+  const icon = document.getElementById('wxi-icon');
+  const temp = document.getElementById('wxi-temp');
+  const desc = document.getElementById('wxi-desc');
+  if (icon) icon.textContent = w.i;
+  if (temp) temp.textContent = `${info.max}°/${info.min}°`;
+  if (desc) desc.textContent = w.d;
+}
+function openWxLink(){ window.open(wxUrlCurrent,'_blank'); }
+
+// ══════════════ CHECKLIST ══════════════
+function buildChecklist() {
+  const c = document.getElementById('cl-container');
+  c.innerHTML = '';
+  checklist.forEach((g,gi)=>{
+    const div = document.createElement('div');
+    div.className = 'cl-group';
+    div.innerHTML = `<div class="cl-group-title">${g.group}</div>`
+      + g.items.map((item,ii)=>`
+        <div class="cl-item ${item.done?'done':''}" id="cli-${gi}-${ii}">
+          <div class="cl-checkbox" onclick="toggleCheck(${gi},${ii})">${item.done?'✓':''}</div>
+          <div class="cl-text" onclick="toggleCheck(${gi},${ii})">
+            <div class="cl-main">${item.main}</div>
+            ${item.sub?`<div class="cl-sub">${item.sub}</div>`:''}
+          </div>
+          ${item.custom?`<button class="cl-del" onclick="delCheck(${gi},${ii})">✕</button>`:''}
+        </div>`).join('');
+    c.appendChild(div);
+  });
+  updateProgress();
+}
+function toggleCheck(gi,ii){
+  const done = checklist[gi].items[ii].done = !checklist[gi].items[ii].done;
+  const el = document.getElementById(`cli-${gi}-${ii}`);
+  el.classList.toggle('done',done);
+  el.querySelector('.cl-checkbox').textContent = done?'✓':'';
+  updateProgress();
+}
+function delCheck(gi,ii){ checklist[gi].items.splice(ii,1); buildChecklist(); }
+function updateProgress(){
+  const all = checklist.flatMap(g=>g.items);
+  const done = all.filter(i=>i.done).length;
+  document.getElementById('prog-fill').style.width = (done/all.length*100)+'%';
+  document.getElementById('prog-txt').textContent = `${done} / ${all.length}`;
+}
+function toggleAddForm(){ document.getElementById('cl-add-form').classList.toggle('open'); document.getElementById('cl-form-main').focus(); }
+function cancelAddForm(){ document.getElementById('cl-add-form').classList.remove('open'); document.getElementById('cl-form-main').value=''; document.getElementById('cl-form-sub').value=''; }
+function confirmAdd(){
+  const main = document.getElementById('cl-form-main').value.trim();
+  if (!main){ document.getElementById('cl-form-main').focus(); return; }
+  const sub = document.getElementById('cl-form-sub').value.trim();
+  const grp = document.getElementById('cl-form-group').value;
+  let target = checklist.find(g=>g.group===grp);
+  if (!target){ checklist.push({group:grp,items:[]}); target=checklist[checklist.length-1]; }
+  target.items.push({main,sub,done:false,custom:true});
+  cancelAddForm(); buildChecklist();
+}
+
+// ══════════════ SHOPPING ══════════════
+const CAT_COLOR = {'藥妝':'#4a90d9','零食':'#f5a623','伴手禮':'#4cb87a','衣物':'#e8445a','電子':'#8e44ad','其他':'#7f8c8d'};
+function renderShop(){
+  const c = document.getElementById('sh-list');
+  if (!shopItems.length){ c.innerHTML='<div class="empty">尚未新增任何商品</div>'; return; }
+  const groups = {};
+  shopItems.forEach((item,i)=>{ (groups[item.cat]=groups[item.cat]||[]).push({...item,idx:i}); });
+  c.innerHTML = Object.entries(groups).map(([cat,items])=>`
+    <div class="sh-cat-section">
+      <div class="sh-cat-label" style="color:${CAT_COLOR[cat]||'#888'}">${cat}</div>
+      ${items.map(item=>`
+        <div class="sh-item ${item.bought?'bought':''}" id="shi-${item.idx}">
+          <div class="sh-item-row">
+            <div class="sh-check" onclick="toggleShop(${item.idx})">${item.bought?'✓':''}</div>
+            <div class="sh-name">${item.name}</div>
+            <button class="sh-del" onclick="delShop(${item.idx})">✕</button>
+          </div>
+          <div class="sh-photos" id="shp-${item.idx}">
+            ${(item.photos||[]).map(p=>`<img class="sh-photo" src="${p}" onclick="openLb('${p}')" alt="">`).join('')}
+            <label class="sh-photo-add"><span class="ph-plus">📷</span><span>新增照片</span>
+              <input class="ph-input" type="file" accept="image/*" onchange="addPhoto(event,${item.idx})">
+            </label>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+function addShop(){
+  const name=document.getElementById('sh-input').value.trim();
+  const cat=document.getElementById('sh-cat').value;
+  if(!name) return;
+  shopItems.push({name,cat,bought:false,photos:[],id:Date.now()});
+  document.getElementById('sh-input').value='';
+  renderShop();
+}
+function toggleShop(idx){ shopItems[idx].bought=!shopItems[idx].bought; renderShop(); }
+function delShop(idx){ shopItems.splice(idx,1); renderShop(); }
+function addPhoto(e,idx){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ shopItems[idx].photos.push(ev.target.result); renderShop(); };
+  reader.readAsDataURL(file);
+}
+function openLb(src){ document.getElementById('lb-img').src=src; document.getElementById('lightbox').classList.add('open'); }
+function closeLb(){ document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLb(); if(e.key==='Enter'&&document.activeElement.id==='sh-input') addShop(); });
+
+// ══════════════ EXCHANGE ══════════════
+async function fetchRate(){
+  try{
+    const r = await fetch('https://open.er-api.com/v6/latest/JPY');
+    const data = await r.json();
+    if(data.result==='success'){
+      liveRate = data.rates['TWD'];
+      const updated = new Date(data.time_last_update_utc).toLocaleDateString('zh-TW');
+      document.getElementById('ex-badge').innerHTML = `<span class="ex-rate-live">● 即時匯率</span>　¥1 = NT$ ${liveRate.toFixed(4)}　更新：${updated}`;
+      calcEx();
+    }
+  }catch(e){
+    liveRate=0.215;
+    document.getElementById('ex-badge').textContent='⚠️ 無法取得即時匯率，使用參考值 ¥1 ≈ NT$0.215';
+    calcEx();
+  }
+}
+function setExDir(from,to,el){
+  exDir={from,to};
+  document.querySelectorAll('.ex-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ex-lbl').textContent = from==='JPY'?'輸入日圓 (¥)':'輸入台幣 (NT$)';
+  calcEx();
+}
+function calcEx(){
+  if(!liveRate) return;
+  const val=parseFloat(document.getElementById('ex-inp').value)||0;
+  let result,sym,symF;
+  if(exDir.from==='JPY'){ result=val*liveRate; sym='NT$'; symF='¥'; }
+  else{ result=val/liveRate; sym='¥'; symF='NT$'; }
+  document.getElementById('ex-num').textContent=`${sym} ${result.toLocaleString('zh-TW',{maximumFractionDigits:0})}`;
+  document.getElementById('ex-sub').textContent=`${symF}${val.toLocaleString()} → ${sym}${result.toLocaleString('zh-TW',{maximumFractionDigits:0})}`;
+}
+
+// ══════════════ LEDGER ══════════════
+function addLedger(){
+  const payer=document.getElementById('ld-payer').value;
+  const date=document.getElementById('ld-date').value;
+  const item=document.getElementById('ld-item').value.trim();
+  const amount=parseFloat(document.getElementById('ld-amount').value)||0;
+  const currency=document.getElementById('ld-currency').value;
+  if(!item||!amount) return;
+  ledgerItems.push({payer,date,item,amount,currency,id:Date.now()});
+  document.getElementById('ld-item').value='';
+  document.getElementById('ld-amount').value='';
+  renderLedger();
+}
+function delLedger(id){ ledgerItems=ledgerItems.filter(l=>l.id!==id); renderLedger(); }
+function toJPY(l){ return l.currency==='JPY'?l.amount:l.amount/(liveRate||0.215); }
+function renderLedger(){
+  const c=document.getElementById('ld-list');
+  if(!ledgerItems.length){ c.innerHTML='<div class="empty">尚未記帳</div>'; document.getElementById('ld-summary').style.display='none'; return; }
+  const order=['5/23','5/24','5/25','5/26','5/27','5/28','5/29','5/30'];
+  const sorted=[...ledgerItems].sort((a,b)=>order.indexOf(a.date)-order.indexOf(b.date));
+  c.innerHTML=sorted.map(l=>`
+    <div class="ld-row">
+      <div class="ld-avatar ${l.payer==='奕銓'?'ld-yq':'ld-bf'}">${l.payer==='奕銓'?'奕':'秉'}</div>
+      <div class="ld-info">
+        <div class="ld-item-name">${l.item}</div>
+        <div class="ld-item-sub">${l.date} · ${l.payer}</div>
+      </div>
+      <div class="ld-amt">${l.currency==='JPY'?'¥':'NT$'}${l.amount.toLocaleString()}</div>
+      <button class="ld-del" onclick="delLedger(${l.id})">✕</button>
+    </div>`).join('');
+  const sYQ=ledgerItems.filter(l=>l.payer==='奕銓').reduce((s,l)=>s+toJPY(l),0);
+  const sBF=ledgerItems.filter(l=>l.payer==='秉芬').reduce((s,l)=>s+toJPY(l),0);
+  const total=sYQ+sBF;
+  const diff=sYQ-sBF;
+  let settle=Math.abs(diff)<1?'✓ 雙方花費均等':diff>0?`秉芬 需給奕銓 ¥${Math.round(diff/2).toLocaleString()}`:`奕銓 需給秉芬 ¥${Math.round(-diff/2).toLocaleString()}`;
+  document.getElementById('sum-yq').textContent=`¥${Math.round(sYQ).toLocaleString()}`;
+  document.getElementById('sum-bf').textContent=`¥${Math.round(sBF).toLocaleString()}`;
+  document.getElementById('sum-total').textContent=`¥${Math.round(total).toLocaleString()}`;
+  document.getElementById('ld-settle').textContent=settle;
+  document.getElementById('ld-summary').style.display='block';
+}
+
+// ══════════════ TAB ══════════════
+function switchTab(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  // Header: hide on itinerary (hero takes over), show on others
+  document.getElementById('app-header').style.display = name==='itinerary'?'none':'flex';
+}
+
+// ══════════════ INIT ══════════════
+document.getElementById('app-header').style.display='none'; // hide on load (itinerary tab)
+buildDayStrip();
+renderDayPanel(0);
+fetchWx(0);
+buildChecklist();
+renderShop();
+fetchRate();
+renderLedger();
+</script>
+</body>
+</html>
