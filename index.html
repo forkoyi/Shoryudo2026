@@ -316,22 +316,28 @@ body{
    PAGE 3: 待買清單
    ════════════════════════════════ */
 .sh-wrap{padding:14px 16px 24px;}
-.sh-add-row{display:flex;gap:8px;margin-bottom:8px;}
+.sh-add-area{margin-bottom:12px;}
+.sh-row1{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.sh-row2{display:flex;gap:8px;align-items:center;}
 .sh-input{
-  flex:1;background:#fff;border:1.5px solid var(--border2);border-radius:10px;
+  flex:1;min-width:0;
+  background:#fff;border:1.5px solid var(--border2);border-radius:10px;
   padding:10px 12px;color:var(--text);font-size:13px;
   font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;
+  width:100%;
 }
 .sh-input:focus{border-color:var(--accent);}
 .sh-input::placeholder{color:var(--text3);}
 .sh-cat-sel{
+  flex:1;min-width:0;
   background:#fff;border:1.5px solid var(--border2);border-radius:10px;
   padding:10px;color:var(--text);font-size:12px;
   font-family:'Noto Sans TC',sans-serif;outline:none;cursor:pointer;
 }
 .sh-add-btn{
+  flex-shrink:0;
   background:linear-gradient(135deg,#f27c35,#f5a623);color:#fff;
-  border:none;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:900;
+  border:none;border-radius:10px;padding:10px 18px;font-size:16px;font-weight:900;
   cursor:pointer;box-shadow:0 2px 8px rgba(242,124,53,.3);transition:all .15s;
 }
 .sh-add-btn:hover{transform:scale(1.06);}
@@ -566,17 +572,21 @@ body{
 <!-- PAGE 3: 待買清單 -->
 <div class="page" id="page-shopping">
   <div class="sh-wrap">
-    <div class="sh-add-row">
-      <select class="sh-cat-sel" id="sh-cat">
-        <option value="藥妝">💊 藥妝</option>
-        <option value="零食">🍡 零食</option>
-        <option value="伴手禮">🎁 伴手禮</option>
-        <option value="衣物">👗 衣物</option>
-        <option value="電子">📱 電子</option>
-        <option value="其他">📦 其他</option>
-      </select>
-      <input class="sh-input" id="sh-input" placeholder="新增商品名稱..." maxlength="40">
-      <button class="sh-add-btn" onclick="addShop()">＋</button>
+    <div class="sh-add-area">
+      <div class="sh-row1">
+        <select class="sh-cat-sel" id="sh-cat">
+          <option value="藥妝">💊 藥妝</option>
+          <option value="零食">🍡 零食</option>
+          <option value="伴手禮">🎁 伴手禮</option>
+          <option value="衣物">👗 衣物</option>
+          <option value="電子">📱 電子</option>
+          <option value="其他">📦 其他</option>
+        </select>
+        <button class="sh-add-btn" onclick="addShop()">＋ 新增</button>
+      </div>
+      <div class="sh-row2">
+        <input class="sh-input" id="sh-input" placeholder="輸入商品名稱..." maxlength="40">
+      </div>
     </div>
     <div id="sh-list"></div>
   </div>
